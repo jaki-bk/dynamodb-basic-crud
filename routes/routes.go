@@ -18,4 +18,5 @@ func SetupRoutes(e *echo.Echo) {
 	e.DELETE("/users/:id", userController.DeleteUser)
 	e.GET("/users", userController.GetAllUsers)
 	e.PUT("/users/:id", userController.UpdateUser)
+	e.POST("/bulk-create", userController.BulkCreateUsers)
 }

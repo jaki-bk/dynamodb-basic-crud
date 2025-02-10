@@ -76,3 +76,17 @@ func (c *UserController) GetAllUsers(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, users)
 }
+
+func (c *UserController) BulkCreateUsers(ctx echo.Context) error {
+	var users []models.User
+	if err := ctx.Bind(&users); err != nil {
+		return ctx.JSON(http.StatusBadRequest, "Invalid input")
+	}
+
+	err := c.service.BatchCreateUsers(users)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, "Failed to insert users")
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "bulk insert successfully"})
+}

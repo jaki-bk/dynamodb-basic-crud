@@ -117,3 +117,32 @@ func (r *UserRepository) GetAllUsers() ([]models.User, error) {
 
 	return users, nil
 }
+
+func (r *UserRepository) BatchCreateUsers(users []models.User) error {
+	writeRequests := make([]types.WriteRequest, len(users))
+
+	for i, user := range users {
+		writeRequests[i] = types.WriteRequest{
+			PutRequest: &types.PutRequest{
+				Item: map[string]types.AttributeValue{
+					"id":         &types.AttributeValueMemberS{Value: user.ID},
+					"name":       &types.AttributeValueMemberS{Value: user.Name},
+					"email":      &types.AttributeValueMemberS{Value: user.Email},
+					"city":       &types.AttributeValueMemberS{Value: user.City},
+					"status":     &types.AttributeValueMemberS{Value: user.Status},
+					"created_at": &types.AttributeValueMemberS{Value: user.CreatedAt},
+					"age":        &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", user.Age)},
+				},
+			},
+		}
+	}
+
+	// Perform the batch write operation
+	_, err := config.DB.BatchWriteItem(context.TODO(), &dynamodb.BatchWriteItemInput{
+		RequestItems: map[string][]types.WriteRequest{
+			"Users": writeRequests,
+		},
+	})
+
+	return err
+}
