@@ -48,3 +48,19 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 func (s *UserService) BatchCreateUsers(users []models.User) error {
 	return s.repo.BatchCreateUsers(users)
 }
+
+func (s *UserService) GetUsersByCityAndAge(city string, age string) ([]models.User, error) {
+	return s.repo.GetUsersByCityAndAge(city, age)
+}
+
+func (s *UserService) GetUsersByEmail(email string) ([]models.User, error) {
+	return s.repo.GetUsersByEmail(email)
+}
+
+func (s *UserService) GetUsersByStatusAndCreatedAt(status string, createdAt string) ([]models.User, error) {
+	return s.repo.GetUsersByStatusAndCreatedAt(status, createdAt)
+}
+
+func (s *UserService) GetUsersByName(name string) ([]models.User, error) {
+	return s.repo.GetUsersByName(name)
+}

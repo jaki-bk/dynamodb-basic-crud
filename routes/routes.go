@@ -19,4 +19,8 @@ func SetupRoutes(e *echo.Echo) {
 	e.GET("/users", userController.GetAllUsers)
 	e.PUT("/users/:id", userController.UpdateUser)
 	e.POST("/bulk-create", userController.BulkCreateUsers)
+	e.GET("/users/city-age", userController.GetUsersByCityAndAge)
+	e.GET("/users/email", userController.GetUsersByEmail)
+	e.GET("/users/status-created-at", userController.GetUsersByStatusAndCreatedAt)
+	e.GET("/users/name", userController.GetUsersByName)
 }

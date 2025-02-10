@@ -80,13 +80,59 @@ func (c *UserController) GetAllUsers(ctx echo.Context) error {
 func (c *UserController) BulkCreateUsers(ctx echo.Context) error {
 	var users []models.User
 	if err := ctx.Bind(&users); err != nil {
-		return ctx.JSON(http.StatusBadRequest, "Invalid input")
+		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
 	}
 
 	err := c.service.BatchCreateUsers(users)
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, "Failed to insert users")
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to insert users"})
 	}
 
 	return ctx.JSON(http.StatusOK, map[string]string{"message": "bulk insert successfully"})
+}
+
+func (c *UserController) GetUsersByCityAndAge(ctx echo.Context) error {
+	city := ctx.QueryParam("city")
+	age := ctx.QueryParam("age")
+
+	users, err := c.service.GetUsersByCityAndAge(city, age)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get users"})
+	}
+
+	return ctx.JSON(http.StatusOK, users)
+}
+
+func (c *UserController) GetUsersByEmail(ctx echo.Context) error {
+	email := ctx.QueryParam("email")
+
+	users, err := c.service.GetUsersByEmail(email)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get users by email"})
+	}
+
+	return ctx.JSON(http.StatusOK, users)
+}
+
+func (c *UserController) GetUsersByStatusAndCreatedAt(ctx echo.Context) error {
+	status := ctx.QueryParam("status")
+	createdAt := ctx.QueryParam("created_at")
+
+	users, err := c.service.GetUsersByStatusAndCreatedAt(status, createdAt)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get users by status and created_at"})
+	}
+
+	return ctx.JSON(http.StatusOK, users)
+}
+
+func (c *UserController) GetUsersByName(ctx echo.Context) error {
+	name := ctx.QueryParam("name")
+
+	users, err := c.service.GetUsersByName(name)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get users by name"})
+	}
+
+	return ctx.JSON(http.StatusOK, users)
 }
