@@ -137,7 +137,6 @@ func (r *UserRepository) BatchCreateUsers(users []models.User) error {
 		}
 	}
 
-	// Perform the batch write operation
 	_, err := config.DB.BatchWriteItem(context.TODO(), &dynamodb.BatchWriteItemInput{
 		RequestItems: map[string][]types.WriteRequest{
 			"Users": writeRequests,
@@ -145,4 +144,110 @@ func (r *UserRepository) BatchCreateUsers(users []models.User) error {
 	})
 
 	return err
+}
+
+func (ur *UserRepository) GetUsersByEmail(email string) ([]models.User, error) {
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String("Users"),
+		IndexName:              aws.String("GSI_Email"),
+		KeyConditionExpression: aws.String("email = :email"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":email": &types.AttributeValueMemberS{Value: email},
+		},
+	}
+
+	result, err := config.DB.Query(context.TODO(), input)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []models.User
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (ur *UserRepository) GetUsersByCityAndAge(city string, age string) ([]models.User, error) {
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String("Users"),
+		IndexName:              aws.String("GSI_City_Age"),
+		KeyConditionExpression: aws.String("city = :city and age = :age"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":city": &types.AttributeValueMemberS{Value: city},
+			":age":  &types.AttributeValueMemberN{Value: age},
+		},
+	}
+
+	result, err := config.DB.Query(context.TODO(), input)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []models.User
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (ur *UserRepository) GetUsersByStatusAndCreatedAt(status string, createdAt string) ([]models.User, error) {
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String("Users"),
+		IndexName:              aws.String("GSI_Status_CreatedAt"),
+		KeyConditionExpression: aws.String("#status = :status and #created_at = :created_at"),
+		ExpressionAttributeNames: map[string]string{
+			"#status":     "status",
+			"#created_at": "created_at",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":status":     &types.AttributeValueMemberS{Value: status},
+			":created_at": &types.AttributeValueMemberS{Value: createdAt},
+		},
+	}
+
+	result, err := config.DB.Query(context.TODO(), input)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []models.User
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (ur *UserRepository) GetUsersByName(name string) ([]models.User, error) {
+	input := &dynamodb.QueryInput{
+		TableName:              aws.String("Users"),
+		IndexName:              aws.String("GSI_Name"),
+		KeyConditionExpression: aws.String("#name = :name"),
+		ExpressionAttributeNames: map[string]string{
+			"#name": "name",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":name": &types.AttributeValueMemberS{Value: name},
+		},
+	}
+
+	result, err := config.DB.Query(context.TODO(), input)
+	if err != nil {
+		fmt.Println("Error querying DynamoDB:", err)
+		return nil, err
+	}
+
+	var users []models.User
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
