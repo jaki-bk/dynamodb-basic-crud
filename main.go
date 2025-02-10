@@ -9,7 +9,7 @@ import (
 
 func main() {
 	config.InitDynamoDB()
-	config.DeleteUserTable()
+	//config.DeleteUserTable()
 	config.CreateUserTable()
 
 	e := echo.New()

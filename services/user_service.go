@@ -44,3 +44,7 @@ func (s *UserService) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
+
+func (s *UserService) BatchCreateUsers(users []models.User) error {
+	return s.repo.BatchCreateUsers(users)
+}
