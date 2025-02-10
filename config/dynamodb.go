@@ -63,3 +63,17 @@ func CreateUserTable() error {
 	fmt.Println("✅ Users table created successfully")
 	return nil
 }
+
+func DeleteUserTable() error {
+	input := &dynamodb.DeleteTableInput{
+		TableName: aws.String("Users"),
+	}
+
+	_, err := DB.DeleteTable(context.TODO(), input)
+	if err != nil {
+		return fmt.Errorf("failed to delete table: %w", err)
+	}
+
+	fmt.Println("✅ Users table deleted successfully")
+	return nil
+}
