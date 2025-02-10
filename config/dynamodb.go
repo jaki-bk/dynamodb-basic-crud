@@ -45,6 +45,30 @@ func CreateUserTable() error {
 				AttributeName: aws.String("id"),
 				AttributeType: types.ScalarAttributeTypeS,
 			},
+			{
+				AttributeName: aws.String("email"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("city"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("status"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("created_at"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("age"),
+				AttributeType: types.ScalarAttributeTypeN,
+			},
+			{
+				AttributeName: aws.String("name"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
 		},
 		KeySchema: []types.KeySchemaElement{
 			{
@@ -53,6 +77,64 @@ func CreateUserTable() error {
 			},
 		},
 		BillingMode: types.BillingModePayPerRequest,
+		GlobalSecondaryIndexes: []types.GlobalSecondaryIndex{
+			{
+				IndexName: aws.String("GSI_Email"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("email"),
+						KeyType:       types.KeyTypeHash,
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: types.ProjectionTypeAll,
+				},
+			},
+			{
+				IndexName: aws.String("GSI_City_Age"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("city"),
+						KeyType:       types.KeyTypeHash,
+					},
+					{
+						AttributeName: aws.String("age"),
+						KeyType:       types.KeyTypeRange,
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: types.ProjectionTypeAll,
+				},
+			},
+			{
+				IndexName: aws.String("GSI_Status_CreatedAt"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("status"),
+						KeyType:       types.KeyTypeHash,
+					},
+					{
+						AttributeName: aws.String("created_at"),
+						KeyType:       types.KeyTypeRange,
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: types.ProjectionTypeAll,
+				},
+			},
+			{
+				IndexName: aws.String("GSI_Name"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("name"),
+						KeyType:       types.KeyTypeHash,
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: types.ProjectionTypeAll,
+				},
+			},
+		},
 	}
 
 	_, err := DB.CreateTable(context.TODO(), input)
@@ -60,7 +142,7 @@ func CreateUserTable() error {
 		return fmt.Errorf("failed to create table: %w", err)
 	}
 
-	fmt.Println("✅ Users table created successfully")
+	fmt.Println("✅ Users table created successfully with GSIs")
 	return nil
 }
 
