@@ -147,7 +147,7 @@ func CreateUserTable() error {
 		return fmt.Errorf("failed to create table: %w", err)
 	}
 
-	fmt.Println("✅ Users table created successfully with GSIs")
+	fmt.Println("Users table created successfully with GSIs")
 	return nil
 }
 
