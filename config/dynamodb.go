@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -26,7 +27,11 @@ func InitDynamoDB() {
 			})),
 		config.WithEndpointResolver(aws.EndpointResolverFunc(
 			func(service, region string) (aws.Endpoint, error) {
-				return aws.Endpoint{URL: "http://localhost:8000"}, nil
+				backendUrl := os.Getenv("BACKEND_SERVER_URL")
+				if backendUrl == "" {
+					backendUrl = "http://localhost:8000"
+				}
+				return aws.Endpoint{URL: backendUrl}, nil
 			})),
 	)
 
